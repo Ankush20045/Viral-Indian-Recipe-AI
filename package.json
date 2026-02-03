@@ -1,12 +1,14 @@
 {
+  
   "name": "viral-indian-recipe-ai",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Viral Indian Recipe AI Backend",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
-  "keywords": [],
+  "keywords": ["recipes", "ai", "indian-food"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
@@ -18,3 +20,4 @@
     "express": "^5.2.1"
   }
 }
+
