@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,9 +10,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
-
-// Gemini API Setup
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Static Viral Recipe Data
 const recipes = [
@@ -512,46 +508,6 @@ app.get('/api/recipes/:id', (req, res) => {
     const recipe = recipes.find(r => r.id === req.params.id);
     if (!recipe) return res.status(404).json({ message: 'Recipe not found' });
     res.json(recipe);
-});
-
-// AI Assistant Route
-app.post('/api/ask-ai', async (req, res) => {
-    const { prompt, type } = req.body; // type can be 'ingredients' or 'recipeName'
-
-    try {
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-        let systemInstruction = `You are a professional Indian cooking assistant, specifically for bachelors and beginners. 
-        Your tone should be friendly, encouraging, and use 'Hinglish' (Hindi + English mix) where appropriate to sound authentic and local.
-        Focus on minimal utensils, budget-friendly ingredients, and simple steps.
-        
-        Format your response clearly using Markdown. 
-        Always include: 
-        - **Recipe Name**
-        - **Ingredients** (with quantities)
-        - **Step-by-Step Method**
-        - **Cooking Time**
-        - **Pro Tip** (Bachelor hack)`;
-
-        let userPrompt = "";
-        if (type === 'ingredients') {
-            userPrompt = `Suggest 1-2 simple Indian recipes I can make with these ingredients: ${prompt}. Keep it very simple.`;
-        } else {
-            userPrompt = `How to make ${prompt} in a simple bachelor style? Give me the recipe.`;
-        }
-
-        const msg = systemInstruction + "\n\n" + userPrompt;
-
-        const result = await model.generateContent(msg);
-        const response = await result.response;
-        const text = response.text();
-
-        res.json({ response: text });
-
-    } catch (error) {
-        console.error("AI Error:", error);
-        res.status(500).json({ error: "Failed to fetch AI response. Try again later." });
-    }
 });
 
 app.listen(PORT, () => {
